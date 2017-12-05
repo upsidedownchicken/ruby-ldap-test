@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'net/ldap'
+
+ldap = Net::LDAP.new(
+  host: ENV.fetch('LDAP_HOST'),
+  port: ENV.fetch('LDAP_PORT', 389).to_i,
+  auth: {
+    method: :simple,
+    username: ENV.fetch('LDAP_USERNAME'),
+    password: ENV.fetch('LDAP_PASSWORD')
+  }
+)
+
+filter = Net::LDAP::Filter.eq('cn', 'e*')
+treebase = 'dc=example, dc=com'
+
+ldap.search(base: treebase, filter: filter) do |entry|
+  puts entry.inspect
+end
+
+puts ldap.get_operation_result.inspect
